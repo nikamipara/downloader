@@ -22,28 +22,33 @@ import deepthings.reddit.downloader.utils.URLUtils;
 public class MediaDownloaderService {
 	private static MediaDownloaderService instance;
 
-	public static synchronized MediaDownloaderService getInstance() {
+	public static synchronized MediaDownloaderService getInstance(String sub) {
 		if (instance == null) {
-			instance = new MediaDownloaderService();
+			instance = new MediaDownloaderService(sub);
 			return instance;
 		} else {
 			return instance;
 		}
 	}
 
-	private MediaDownloaderService() {
+	private MediaDownloaderService(String sub) {
+		subReddit = sub;
 	}
+	
+	private MediaDownloaderService(){}
 
 	private List<Dlink> downloadlinks = new CopyOnWriteArrayList<>();
 	private boolean isBusy = false;
 	private AtomicInteger counter = new AtomicInteger();
 	private boolean isLoading;
+	private Callback<String> callback;
+	private String subReddit = "";
 
 	// TODO has to be call back but will worry about that later.
-	public void download(List<RedditPost> redditPostList) {
+	public void download(List<RedditPost> redditPostList , Callback<String> cb) {
+		callback = cb;
 		if (isBusy) {
-			LogUtils.d("Downloader",
-					"downloader is busy right now. post later.");
+			callback.onFailure(null, new Throwable("Downloader Busy Try later!"));
 			return;
 		}
 
@@ -67,8 +72,8 @@ public class MediaDownloaderService {
 	private void proceedWithDownload() {
 		List<Dlink> completeList = downloadlinks;
 		downloadlinks = new CopyOnWriteArrayList<Dlink>();
-		LogUtils.d(this, "All Link Accurried. Stage 2 Started");
-		LinkDownloader.getInstance("pics").download(completeList);//TODO make it dynamic
+//		LogUtils.d(this, "All Link Accurried. Stage 2 Started with links :"+completeList.size());
+		LinkDownloader.getInstance(subReddit ).download(completeList,callback);//TODO make it dynamic
 
 	}
 
@@ -94,8 +99,11 @@ public class MediaDownloaderService {
 	private void add(Dlink d) {
 		if (d != null) {
 			downloadlinks.add(d);
-			LogUtils.d(this, "link retrival successful-"+d.url);
+			//LogUtils.d(this, "link retrival successful-"+d.url);
+		}else{
+			callback.onFailure(null, new Throwable("downloadfailed!"));
 		}
+		
 		counter.decrementAndGet();
 		updateStatus();
 	}

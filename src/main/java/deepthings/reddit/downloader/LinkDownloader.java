@@ -35,21 +35,24 @@ public class LinkDownloader {
 	}
 
 	private boolean isBusy = false;
-	private String videoURI;
+	private String downloadUrl;
 	private List<Dlink> links;
-	private int counter = 0;;
+	private int counter = 0;
+	private Callback<String> callBack;
 
 	// TODO has to be call back but will worry about that later.
-	public void download(List<Dlink> links) {
+	public void download(List<Dlink> links,Callback<String> cb) {
+		callBack = cb;
 		if (isBusy) {
 			LogUtils.d("LinkDownloader",
 					"downloader is busy right now. post later.");
+			callBack.onFailure(null, new Throwable("LinkDownloader Busy Try Again!"));
 			return;
 		}
 
 		isBusy = true;
 		this.links = links;
-
+		counter = 0;
 		download(counter++);
 
 	}
@@ -62,10 +65,12 @@ public class LinkDownloader {
 
 		Dlink link = links.get(index);
 		String name = URLUtils.getFileName(link.url);
-		videoURI = FileUtils.getpath(name, subReddit);
-		if (FileUtils.exists(videoURI))
-			LogUtils.d("NIKUNJTEST", "Hit found for name ::" + name);
-		else {
+		downloadUrl = FileUtils.getpath(name, subReddit);
+		if (FileUtils.exists(downloadUrl)) {
+			//LogUtils.d("NIKUNJTEST", "Hit found for name ::" + name);
+			callBack.onResponse(null, null);//bridge to pass file name in future.//TODO
+			download(counter++);
+		} else {
 			// download
 			FileDownloaderTask task = new FileDownloaderTask(link.url,
 					downloadCallBack);
@@ -84,32 +89,36 @@ public class LinkDownloader {
 			long downloaded = 0;
 			long target = response.body().contentLength();
 
-			LogUtils.d("LinkDownloader", "File size is: " + target * 1.0 / 1000);
 			try {
-				OutputStream outStream = new FileOutputStream(videoURI);
-				double oldpercent = 0.0;
+				OutputStream outStream = new FileOutputStream(downloadUrl);
+				double printed = 0.0;
 				while (true) {
+
 					int read = istream.read(buff);
 					if (read == -1) {
 						break;
 					}
+
 					outStream.write(buff, 0, read);
 					// write buff
 					downloaded += read;
 					double newpercent = downloaded * 100.0 / target;
-					if (newpercent - oldpercent > 5 || newpercent > 99) {
-						LogUtils.d("LinkDownloader", "Progress:: " + newpercent
-								+ "%");
-					}
-					oldpercent = newpercent;
+						StringBuffer s = new StringBuffer();
+						for(int i=0; i <=newpercent-printed ; i ++){
+							s.append(".");
+						}
+						System.out.print(s);
+						printed = newpercent;
 				}
+				System.out.println();
+				LogUtils.d("LinkDownloader", "FILE PATH:: " + downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
 
-				LogUtils.d("LinkDownloader", "FILE PATH:: " + videoURI);
+				callBack.onResponse(null, null);
 				outStream.flush();
 				outStream.close();
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				callBack.onFailure(null, new Throwable(e.getMessage()));
 			} finally {
 				if (istream != null) {
 					try {
@@ -124,6 +133,7 @@ public class LinkDownloader {
 
 		@Override
 		public void onFailure(Call<ResponseBody> call, Throwable t) {
+			callBack.onFailure(null, t);
 			download(counter++);
 		}
 
