@@ -41,4 +41,14 @@ public class URLUtils {
 				|| url.contains(".webm") || url.contains(".gifv");
 
 	}
+	
+	public static String getBase(String url) {
+        int index = url.lastIndexOf('/');
+        return url.substring(0, index + 1);
+    }
+	
+	public static String getFileName(String url) {
+		int index = url.lastIndexOf('/');
+		return url.substring(index + 1);
+	}
 }

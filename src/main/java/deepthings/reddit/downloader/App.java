@@ -1,13 +1,11 @@
 package deepthings.reddit.downloader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.google.gson.Gson;
-
 import deepthings.reddit.downloader.Providers.Provider;
 import deepthings.reddit.downloader.model.sub.Data;
 import deepthings.reddit.downloader.model.sub.RedditPost;
@@ -15,26 +13,18 @@ import deepthings.reddit.downloader.model.sub.SubReddit;
 import deepthings.reddit.downloader.utils.LogUtils;
 import deepthings.reddit.downloader.utils.URLUtils;
 
-/**
- * Hello world!
- *
- */
 public class App {
+	private static final String TAG = "app";
 	public static void main(String[] args) {
-		Gson g = new Gson();
-		System.out.println("Hello World!");
+		subReddit = "pics";
+		new App().loadMorePosts();
 	}
 
-	private String subReddit;
-	private String after;
-	private List<RedditPost> redditPostList;
+	private static String subReddit;
+	private static String after = "";
 
-	private void loadMorePosts(final boolean clearPrevious) {
-		/*
-		 * new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() {
-		 */
+	private void loadMorePosts() {
+	
 		try {
 			Provider.getInstance().fetchPosts(subReddit, after,
 					new Callback<SubReddit>() {
@@ -42,13 +32,13 @@ public class App {
 						@Override
 						public void onResponse(Call<SubReddit> call,
 								Response<SubReddit> response) {
-							processPostList(response.body().getData(),
-									clearPrevious);
+							LogUtils.d(App.this, "subreddit post retrival successful.");
+							processPostList(response.body().getData());
 						}
 
 						@Override
 						public void onFailure(Call<SubReddit> call, Throwable t) {
-							LogUtils.report(t);
+							LogUtils.e(App.this,t);
 
 						}
 					});
@@ -56,24 +46,20 @@ public class App {
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
 		}
-		/* }).start(); */
+
 	}
 
-	protected void processPostList(Data data, boolean clearPrevious) {
+	protected void processPostList(Data data) {
 		after = data.getAfter();
-		if (clearPrevious)
-			redditPostList.clear();
-		int previoussize = redditPostList.size();
+		List<RedditPost> redditPostList = new ArrayList<>();
 		for (RedditPost p : data.getPostList()) {
 			if (!URLUtils.isValid(p.getThumbnail()))
 				continue;
+			LogUtils.d("Nikunj", p.getName());
 			redditPostList.add(p);
-			/*
-			 * if(p.getDomain().contains("imgur")){
-			 * LogUtils.d("Nikunj","thumb:"+p.getThumbnail()+"url:"+p.getUrl());
-			 * }
-			 */
 		}
+		//start downloading those posts. need some kind of call back here so that next phase can be started.
+		MediaDownloaderService.getInstance().download(redditPostList);
 	}
 
 }
