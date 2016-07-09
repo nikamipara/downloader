@@ -68,7 +68,7 @@ public class LinkDownloader {
 		downloadUrl = FileUtils.getpath(name, subReddit);
 		if (FileUtils.exists(downloadUrl)) {
 			//LogUtils.d("NIKUNJTEST", "Hit found for name ::" + name);
-			callBack.onResponse(null, null);//bridge to pass file name in future.//TODO
+			callBack.onResponse(null, Response.success(downloadUrl));//bridge to pass file name in future.//TODO
 			download(counter++);
 		} else {
 			// download
@@ -107,13 +107,13 @@ public class LinkDownloader {
 						for(int i=0; i <=newpercent-printed ; i ++){
 							s.append(".");
 						}
-						System.out.print(s);
+						//System.out.print(s);
 						printed = newpercent;
 				}
 				System.out.println();
-				LogUtils.d("LinkDownloader", "FILE PATH:: " + downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
+				//LogUtils.d("LinkDownloader", "FILE PATH:: " + downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
 
-				callBack.onResponse(null, null);
+				callBack.onResponse(null,Response.success(downloadUrl));
 				outStream.flush();
 				outStream.close();
 

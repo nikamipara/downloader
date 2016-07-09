@@ -77,6 +77,7 @@ public class App {
 					@Override
 					public void onResponse(Call<String> call,
 							Response<String> response) {
+						LogUtils.d("success",response.body());
 						success();
 					}
 
