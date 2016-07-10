@@ -9,4 +9,5 @@ public interface AppWideConstants {
     int POST_LIMIT = 4*9;
     int THRESHOLD_BEFORE_LOAD = 18;
     int PAGE_LIMIT = 5;
+    int DOWNLOAD_POST_LIMIT = 100;
 }
