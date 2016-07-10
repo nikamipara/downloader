@@ -42,12 +42,13 @@ public class LinkDownloader {
 	private Callback<String> callBack;
 
 	// TODO has to be call back but will worry about that later.
-	public void download(List<Dlink> links,Callback<String> cb) {
+	public void download(List<Dlink> links, Callback<String> cb) {
 		callBack = cb;
 		if (isBusy) {
 			LogUtils.d("LinkDownloader",
 					"downloader is busy right now. post later.");
-			callBack.onFailure(null, new Throwable("LinkDownloader Busy Try Again!"));
+			callBack.onFailure(null, new Throwable(
+					"LinkDownloader Busy Try Again!"));
 			return;
 		}
 
@@ -59,36 +60,49 @@ public class LinkDownloader {
 	}
 
 	private void download(int index) {
-		if (isCancelled||index >= links.size()) {
+		if (isCancelled || index >= links.size()) {
 			isBusy = false;
 			return;
 		}
 
 		Dlink link = links.get(index);
-		String name = URLUtils.getFileName(link.url);
-		downloadUrl = FileUtils.getpath(name, subReddit);
+		String filename = URLUtils.getFileName(link);
+		downloadUrl = FileUtils.getpath(filename, subReddit);
 		if (FileUtils.exists(downloadUrl)) {
-			//LogUtils.d("NIKUNJTEST", "Hit found for name ::" + name);
-			callBack.onResponse(null, Response.success(downloadUrl));//bridge to pass file name in future.//TODO
+			// LogUtils.d("NIKUNJTEST", "Hit found for name ::" + name);
+			callBack.onResponse(null, Response.success(downloadUrl));// bridge
+																		// to
+																		// pass
+																		// file
+																		// name
+																		// in
+																		// future.//TODO
 			download(counter++);
 		} else {
 			// download
-			FileDownloaderTask task = new FileDownloaderTask(link.url,
+			FileDownloaderTask task = new FileDownloaderTask(link,
 					downloadCallBack);
 		}
 	}
 
 	private LinkDownloader() {
 	}
-	
-	public void cancel(){
+
+	public void cancel() {
 		isCancelled = true;
 	}
+
 	private Callback downloadCallBack = new Callback<ResponseBody>() {
 		@Override
 		public void onResponse(Call<ResponseBody> call,
 				Response<ResponseBody> response) {
+			if (response.body() == null) {
+				download(counter++);
+				return;
+			}
+
 			InputStream istream = response.body().byteStream();
+
 			byte[] buff = new byte[4096];
 			long downloaded = 0;
 			long target = response.body().contentLength();
@@ -107,17 +121,17 @@ public class LinkDownloader {
 					// write buff
 					downloaded += read;
 					double newpercent = downloaded * 100.0 / target;
-						StringBuffer s = new StringBuffer();
-						for(int i=0; i <=newpercent-printed ; i ++){
-							s.append(".");
-						}
-						//System.out.print(s);
-						printed = newpercent;
+					StringBuffer s = new StringBuffer();
+					for (int i = 0; i <= newpercent - printed; i++) {
+						s.append(".");
+					}
+					// System.out.print(s);
+					printed = newpercent;
 				}
-				System.out.println();
-				//LogUtils.d("LinkDownloader", "FILE PATH:: " + downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
+				// LogUtils.d("LinkDownloader", "FILE PATH:: " +
+				// downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
 
-				callBack.onResponse(null,Response.success(downloadUrl));
+				callBack.onResponse(null, Response.success(downloadUrl));
 				outStream.flush();
 				outStream.close();
 
@@ -131,6 +145,7 @@ public class LinkDownloader {
 						e.printStackTrace();
 					}
 				}
+
 				download(counter++);
 			}
 		}

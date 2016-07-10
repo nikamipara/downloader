@@ -10,4 +10,5 @@ public interface AppWideConstants {
     int THRESHOLD_BEFORE_LOAD = 18;
     int PAGE_LIMIT = 5;
     int DOWNLOAD_POST_LIMIT = 100;
+    int NAME_LENGTH = 15;
 }

@@ -93,10 +93,10 @@ public class MediaDownloaderService {
 	// CAN return null
 	private void extractDownloadLink(RedditPost p) {
 		if (URLUtils.isImage(p.getUrl())) {
-			add(new Dlink(p.getUrl(), MediaType.IMAGE));
+			add(new Dlink(p.getUrl(), MediaType.IMAGE,p.getTitle()));
 		} else if (URLUtils.isVideo(p.getUrl())) {
 			// load directly no need to do anything.
-			add(new Dlink(p.getUrl(), MediaType.VIDEO));
+			add(new Dlink(p.getUrl(), MediaType.VIDEO,p.getTitle()));
 		} else if (p.getDomain().contains("imgur")) {
 			// run imgur task.
 			runImgurTask(p);
@@ -121,7 +121,7 @@ public class MediaDownloaderService {
 		updateStatus();
 	}
 
-	private void runImgurTask(RedditPost p) {
+	private void runImgurTask(final RedditPost p) {
 		Provider.getInstance().getImgur(URLUtils.getId(p.getUrl()),
 				new Callback<ImgurHolder>() {
 					@Override
@@ -135,9 +135,9 @@ public class MediaDownloaderService {
 						}
 						Imgur item = response.body().getData();
 						if (!StringUtils.isEmpty(item.getMp4())) {
-							add(new Dlink(item.getMp4(), MediaType.VIDEO));
+							add(new Dlink(item.getMp4(), MediaType.VIDEO,p.getTitle()));
 						} else {
-							add(new Dlink(item.getLink(), MediaType.IMAGE));
+							add(new Dlink(item.getLink(), MediaType.IMAGE,p.getTitle()));
 						}
 						// item.getWebmUrl();
 					}
@@ -150,7 +150,7 @@ public class MediaDownloaderService {
 				});
 	}
 
-	private void runGfycatTask(RedditPost p) {
+	private void runGfycatTask(final RedditPost p) {
 		Provider.getInstance().getGfyCat(URLUtils.getId(p.getUrl()),
 				new Callback<GfyCat>() {
 
@@ -164,7 +164,7 @@ public class MediaDownloaderService {
 							return;
 						}
 						GfyItem item = response.body().getGfyItem();
-						add(new Dlink(item.getMp4Url(), MediaType.VIDEO));
+						add(new Dlink(item.getMp4Url(), MediaType.VIDEO,p.getTitle()));
 					}
 
 					@Override
