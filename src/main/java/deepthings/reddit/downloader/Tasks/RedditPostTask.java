@@ -24,13 +24,14 @@ public class RedditPostTask {
                     + ".json"
                     + "?after=AFTER";*/
 
-    private final String subreddit;
+    private final String subreddit,category;
     // --Commented out by Inspection (23/01/16 5:30 PM):private String after;
     private final SubRedditInterface service;
 
-    public RedditPostTask(@SuppressWarnings("SameParameterValue") String sub) {
+    public RedditPostTask(@SuppressWarnings("SameParameterValue") String sub,String cat) {
         subreddit = sub;
-
+        category = cat;
+        
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.reddit.com")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -55,7 +56,7 @@ public class RedditPostTask {
      */
     public void fetchPosts(final Callback<SubReddit> callback, String after) {
 
-        Call<SubReddit> call = service.loadSubReddit(subreddit, after, StringUtils.isEmpty(after) ? AppWideConstants.POST_LIMIT_FIRST_TIME : AppWideConstants.POST_LIMIT);
+        Call<SubReddit> call = service.loadSubReddit(subreddit,category, after, StringUtils.isEmpty(after) ? AppWideConstants.POST_LIMIT_FIRST_TIME : AppWideConstants.POST_LIMIT);
         call.enqueue(callback);
         //String raw = NetWorkUtils.readContents(url);
         /*List<RedditPost> list = new ArrayList<>();

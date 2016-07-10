@@ -35,6 +35,7 @@ public class LinkDownloader {
 	}
 
 	private boolean isBusy = false;
+	private boolean isCancelled = false;
 	private String downloadUrl;
 	private List<Dlink> links;
 	private int counter = 0;
@@ -58,7 +59,7 @@ public class LinkDownloader {
 	}
 
 	private void download(int index) {
-		if (index >= links.size()) {
+		if (isCancelled||index >= links.size()) {
 			isBusy = false;
 			return;
 		}
@@ -79,7 +80,10 @@ public class LinkDownloader {
 
 	private LinkDownloader() {
 	}
-
+	
+	public void cancel(){
+		isCancelled = true;
+	}
 	private Callback downloadCallBack = new Callback<ResponseBody>() {
 		@Override
 		public void onResponse(Call<ResponseBody> call,

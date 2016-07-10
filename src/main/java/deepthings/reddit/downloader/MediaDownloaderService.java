@@ -34,8 +34,9 @@ public class MediaDownloaderService {
 	private MediaDownloaderService(String sub) {
 		subReddit = sub;
 	}
-	
-	private MediaDownloaderService(){}
+
+	private MediaDownloaderService() {
+	}
 
 	private List<Dlink> downloadlinks = new CopyOnWriteArrayList<>();
 	private boolean isBusy = false;
@@ -43,12 +44,15 @@ public class MediaDownloaderService {
 	private boolean isLoading;
 	private Callback<String> callback;
 	private String subReddit = "";
+	private LinkDownloader downloader;
+	private boolean isCancelled;
 
 	// TODO has to be call back but will worry about that later.
-	public void download(List<RedditPost> redditPostList , Callback<String> cb) {
+	public void download(List<RedditPost> redditPostList, Callback<String> cb) {
 		callback = cb;
 		if (isBusy) {
-			callback.onFailure(null, new Throwable("Downloader Busy Try later!"));
+			callback.onFailure(null,
+					new Throwable("Downloader Busy Try later!"));
 			return;
 		}
 
@@ -72,9 +76,18 @@ public class MediaDownloaderService {
 	private void proceedWithDownload() {
 		List<Dlink> completeList = downloadlinks;
 		downloadlinks = new CopyOnWriteArrayList<Dlink>();
-//		LogUtils.d(this, "All Link Accurried. Stage 2 Started with links :"+completeList.size());
-		LinkDownloader.getInstance(subReddit ).download(completeList,callback);//TODO make it dynamic
+		// LogUtils.d(this,
+		// "All Link Accuried. Stage 2 Started with links :"+completeList.size());
+		downloader = LinkDownloader.getInstance(subReddit);
+		if (!isCancelled)
+			downloader.download(completeList, callback);// TODO make it dynamic
 
+	}
+
+	public void cancel() {
+		if (downloader != null)
+			downloader.cancel();
+		isCancelled = true;
 	}
 
 	// CAN return null
@@ -99,11 +112,11 @@ public class MediaDownloaderService {
 	private void add(Dlink d) {
 		if (d != null) {
 			downloadlinks.add(d);
-			//LogUtils.d(this, "link retrival successful-"+d.url);
-		}else{
+			// LogUtils.d(this, "link retrival successful-"+d.url);
+		} else {
 			callback.onFailure(null, new Throwable("downloadfailed!"));
 		}
-		
+
 		counter.decrementAndGet();
 		updateStatus();
 	}
@@ -115,7 +128,8 @@ public class MediaDownloaderService {
 					public void onResponse(Call<ImgurHolder> call,
 							Response<ImgurHolder> response) {
 						if (response.body() == null) {
-							LogUtils.e(MediaDownloaderService.this, response.raw().toString());
+							LogUtils.e(MediaDownloaderService.this, response
+									.raw().toString());
 							add(null);
 							return;
 						}
@@ -130,7 +144,7 @@ public class MediaDownloaderService {
 
 					@Override
 					public void onFailure(Call<ImgurHolder> call, Throwable t) {
-						LogUtils.e(MediaDownloaderService.this,t);
+						LogUtils.e(MediaDownloaderService.this, t);
 						add(null);
 					}
 				});
@@ -144,7 +158,8 @@ public class MediaDownloaderService {
 					public void onResponse(Call<GfyCat> call,
 							Response<GfyCat> response) {
 						if (response.body() == null) {
-							LogUtils.e(MediaDownloaderService.this, response.raw().toString());
+							LogUtils.e(MediaDownloaderService.this, response
+									.raw().toString());
 							add(null);
 							return;
 						}

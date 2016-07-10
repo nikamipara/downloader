@@ -13,14 +13,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import deepthings.reddit.downloader.callBacks.AppCallBack;
+import deepthings.reddit.downloader.callBacks.ConfingChooserCallBack;
 import deepthings.reddit.downloader.constants.AppWideConstants;
 import deepthings.reddit.downloader.model.DConfig;
 import deepthings.reddit.downloader.utils.StringUtils;
 
 public class JConfigChooser extends JFrame {
 
-	private AppCallBack callBack;
+	private ConfingChooserCallBack callBack;
 	private JavaFileChooser filePicker;
 	private JTextField subR, Limit;
 	private JComboBox<String> cat;
@@ -28,7 +28,7 @@ public class JConfigChooser extends JFrame {
 	private static String[] category = { "hot", "top", "rising", "new",
 			"controversial", "gilded" };
 
-	public JConfigChooser(AppCallBack cb) {
+	public JConfigChooser(ConfingChooserCallBack cb) {
 		super("SubReddit Media Downloader");
 		callBack = cb;
 

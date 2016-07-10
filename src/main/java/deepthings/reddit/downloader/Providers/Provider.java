@@ -27,13 +27,13 @@ public class Provider {
 	private Provider() {
 	}
 
-	public void fetchPosts(final String subreddit,
+	public void fetchPosts(final String subreddit,final String cat,
 			@SuppressWarnings("SameParameterValue") final String after,
 			final Callback<SubReddit> callback) {
 		NetWorkUtils.execute(new Runnable() {
 			@Override
 			public void run() {
-				RedditPostTask h = new RedditPostTask(subreddit);
+				RedditPostTask h = new RedditPostTask(subreddit,cat);
 				h.fetchPosts(callback, after);
 			}
 		});
