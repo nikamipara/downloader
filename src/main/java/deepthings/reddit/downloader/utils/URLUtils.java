@@ -2,6 +2,9 @@ package deepthings.reddit.downloader.utils;
 
 import java.net.URL;
 
+import deepthings.reddit.downloader.constants.AppWideConstants;
+import deepthings.reddit.downloader.model.Dlink;
+
 /**
  * of redditexperiments2 author nikunj on 05/01/16.
  */
@@ -47,8 +50,24 @@ public class URLUtils {
         return url.substring(0, index + 1);
     }
 	
-	public static String getFileName(String url) {
+	public static String getFileName(Dlink link) {
+		String url  = link.url;
+		int index = url.lastIndexOf('/');
+		String name =  url.substring(index + 1);
+		String postname = link.postTitle;
+		if(postname.length()>AppWideConstants.NAME_LENGTH){
+			postname = postname.substring(0,15);
+		}
+		
+		postname = postname+"-"+name;
+		postname = postname.replaceAll("^[^*&%\\s]+$","");
+		
+		return postname;
+	}
+
+	public static String getFileNameServer(String url) {
 		int index = url.lastIndexOf('/');
 		return url.substring(index + 1);
 	}
+
 }

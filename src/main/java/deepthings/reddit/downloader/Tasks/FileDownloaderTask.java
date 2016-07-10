@@ -19,6 +19,7 @@ public class FileDownloaderTask {
 				URLUtils.getBase(link.url)).build();
 		FileDownloaderInterface service = retrofit
 				.create(FileDownloaderInterface.class);
+		Call<ResponseBody> call = service.get(URLUtils.getFileNameServer(link.url));
 		call.enqueue(callback);
 	}
 
