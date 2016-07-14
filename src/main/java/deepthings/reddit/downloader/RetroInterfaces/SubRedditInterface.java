@@ -13,5 +13,5 @@ public interface SubRedditInterface {
 	@GET("/r/{subreddit}/{category}/.json")
 	Call<SubReddit> loadSubReddit(@Path("subreddit") String sub,@Path("category") String cat,
 			@Query("after") String after,
-			@SuppressWarnings("SameParameterValue") @Query("limit") int limit);
+			@SuppressWarnings("SameParameterValue") @Query("limit") int limit , @Query("t") String duration);
 }

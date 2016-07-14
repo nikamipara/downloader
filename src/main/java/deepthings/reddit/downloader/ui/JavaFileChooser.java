@@ -34,7 +34,7 @@ import javax.swing.JTextField;
 	        // creates the GUI
 	        label = new JLabel("Download Path");
 	         
-	        textField = new JTextField(20);
+	        textField = new JTextField("C:/reddit",20);
 	        button = new JButton("Browse..");
 	         
 	        button.addActionListener(new ActionListener() {

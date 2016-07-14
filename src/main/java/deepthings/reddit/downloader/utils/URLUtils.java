@@ -31,7 +31,8 @@ public class URLUtils {
 	}
 
 	public static boolean isValid(String url) {
-		return (toUrl(url) != null);
+		return (toUrl(url) != null)
+				&& (isImgur(url) || isGfyCat(url) || isImage(url) || isVideo(url));
 	}
 
 	public static boolean isImage(String url) {
@@ -44,24 +45,32 @@ public class URLUtils {
 				|| url.contains(".webm") || url.contains(".gifv");
 
 	}
-	
+
+	public static boolean isImgur(String url) {
+		return !StringUtils.isEmpty(url) && url.contains("imgur");
+	}
+
+	public static boolean isGfyCat(String url) {
+		return !StringUtils.isEmpty(url) && url.contains("gfycat");
+	}
+
 	public static String getBase(String url) {
-        int index = url.lastIndexOf('/');
-        return url.substring(0, index + 1);
-    }
-	
-	public static String getFileName(Dlink link) {
-		String url  = link.url;
 		int index = url.lastIndexOf('/');
-		String name =  url.substring(index + 1);
+		return url.substring(0, index + 1);
+	}
+
+	public static String getFileName(Dlink link) {
+		String url = link.url;
+		int index = url.lastIndexOf('/');
+		String name = url.substring(index + 1);
 		String postname = link.postTitle;
-		if(postname.length()>AppWideConstants.NAME_LENGTH){
-			postname = postname.substring(0,15);
+		if (postname.length() > AppWideConstants.NAME_LENGTH) {
+			postname = postname.substring(0, 15);
 		}
-		
-		postname = postname+"-"+name;
-		postname = postname.replaceAll("^[^*&%\\s]+$","");
-		
+
+		postname = postname + "-" + name;
+		postname = postname.replaceAll("[^\\w,\\d,\\.,-]", "");
+
 		return postname;
 	}
 

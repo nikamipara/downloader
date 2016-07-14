@@ -56,7 +56,7 @@ public class RedditPostTask {
      */
     public void fetchPosts(final Callback<SubReddit> callback, String after) {
 
-        Call<SubReddit> call = service.loadSubReddit(subreddit,category, after, StringUtils.isEmpty(after) ? AppWideConstants.POST_LIMIT_FIRST_TIME : AppWideConstants.POST_LIMIT);
+        Call<SubReddit> call = service.loadSubReddit(subreddit,category, after, StringUtils.isEmpty(after) ? AppWideConstants.POST_LIMIT_FIRST_TIME : AppWideConstants.POST_LIMIT,"all");
         call.enqueue(callback);
         //String raw = NetWorkUtils.readContents(url);
         /*List<RedditPost> list = new ArrayList<>();

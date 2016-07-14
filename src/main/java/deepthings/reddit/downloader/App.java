@@ -70,6 +70,7 @@ public class App implements ConfingChooserCallBack, ProgressCallback {
 						public void onFailure(Call<SubReddit> call, Throwable t) {
 							LogUtils.e(App.this, t);
 
+
 						}
 					});
 
@@ -85,7 +86,7 @@ public class App implements ConfingChooserCallBack, ProgressCallback {
 		after = data.getAfter();
 		List<RedditPost> redditPostList = new ArrayList<>();
 		for (RedditPost p : data.getPostList()) {
-			if (!URLUtils.isValid(p.getThumbnail()))
+			if (!URLUtils.isValid(p.getUrl()))
 				continue;
 			// LogUtils.d("Nikunj", p.getName());
 			redditPostList.add(p);

@@ -42,7 +42,7 @@ public class JConfigChooser extends JFrame {
 		filePicker.setMode(JavaFileChooser.MODE_SAVE);
 		// access JFileChooser class directly
 		JFileChooser fileChooser = filePicker.getFileChooser();
-		fileChooser.setCurrentDirectory(new File("C:/"));
+		fileChooser.setCurrentDirectory(new File("C:/Experiments"));
 		add(filePicker);
 
 		// Set up the content pane.
@@ -52,14 +52,14 @@ public class JConfigChooser extends JFrame {
 
 		// Create and add the components.
 		JLabel label = new JLabel("Subreddit: ");
-		subR = new JTextField("pics", 15);
+		subR = new JTextField("fuxtaposition", 15);
 		contentPane.add(label);
 		contentPane.add(subR);
 		add(contentPane);
 
 		// setup limit of posts
 		label = new JLabel("Limit: ");
-		Limit = new JTextField("100", 5);
+		Limit = new JTextField("1000", 5);
 		contentPane.add(label);
 		contentPane.add(Limit);
 		add(contentPane);
