@@ -80,6 +80,7 @@ public class LinkDownloader {
 			download(counter++);
 		} else {
 			// download
+			 LogUtils.d("NIKUNJ", "starting task for" + downloadUrl);
 			FileDownloaderTask task = new FileDownloaderTask(link,
 					downloadCallBack);
 		}
@@ -96,6 +97,8 @@ public class LinkDownloader {
 		@Override
 		public void onResponse(Call<ResponseBody> call,
 				Response<ResponseBody> response) {
+			 LogUtils.d("NIKUNJ", "onResponse" + downloadUrl);
+
 			if (response.body() == null) {
 				download(counter++);
 				return;
@@ -130,6 +133,7 @@ public class LinkDownloader {
 				}
 				// LogUtils.d("LinkDownloader", "FILE PATH:: " +
 				// downloadUrl+" "+(int) (target * 1.0 / 1000) + "KB");
+				 LogUtils.d("NIKUNJ", "complete task for" + downloadUrl);
 
 				callBack.onResponse(null, Response.success(downloadUrl));
 				outStream.flush();
@@ -152,7 +156,9 @@ public class LinkDownloader {
 
 		@Override
 		public void onFailure(Call<ResponseBody> call, Throwable t) {
-			callBack.onFailure(null, t);
+			
+			 LogUtils.d("NIKUNJ", "fail task for" + downloadUrl);
+			 callBack.onFailure(null, t);
 			download(counter++);
 		}
 
