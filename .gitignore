@@ -50,3 +50,5 @@ target/surefire-reports/TEST-deepthings.reddit.downloader.AppTest.xml
 *.class
 target/classes/deepthings/reddit/downloader/App.class
 *.class
+target/maven-archiver/pom.properties
+target/surefire-reports/TEST-deepthings.reddit.downloader.AppTest.xml
