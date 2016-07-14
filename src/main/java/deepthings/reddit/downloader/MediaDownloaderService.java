@@ -98,7 +98,7 @@ public class MediaDownloaderService {
 
 	// CAN return null
 	private void extractDownloadLink(RedditPost p) {
-		LogUtils.d("NIKUNJ", "downloadlinksize" + downloadlinks.size());
+		//LogUtils.d("NIKUNJ", "downloadlinksize" + downloadlinks.size());
 
 		if (URLUtils.isImage(p.getUrl())) {
 			add(new Dlink(p.getUrl(), MediaType.IMAGE, p.getTitle()));
@@ -142,7 +142,7 @@ public class MediaDownloaderService {
 						if (response.body() == null) {
 							LogUtils.e(MediaDownloaderService.this, response
 									.raw().toString());
-							add(null);
+							reportFailure();
 							return;
 						}
 						Imgur item = response.body().getData();
@@ -159,7 +159,7 @@ public class MediaDownloaderService {
 					@Override
 					public void onFailure(Call<ImgurHolder> call, Throwable t) {
 						LogUtils.e(MediaDownloaderService.this, t);
-						add(null);
+						reportFailure();
 					}
 				});
 	}
@@ -174,7 +174,7 @@ public class MediaDownloaderService {
 						if (response.body() == null) {
 							LogUtils.e(MediaDownloaderService.this, response
 									.raw().toString());
-							add(null);
+							reportFailure();
 							return;
 						}
 						GfyItem item = response.body().getGfyItem();
@@ -185,7 +185,7 @@ public class MediaDownloaderService {
 					@Override
 					public void onFailure(Call<GfyCat> call, Throwable t) {
 						LogUtils.e(t);
-						add(null);
+						reportFailure();
 					}
 				});
 	}
